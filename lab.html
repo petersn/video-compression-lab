@@ -19,6 +19,8 @@ git clone https://github.com/petersn/video-compression-lab</pre>
 		<pre>cd video-compression-lab
 python grading.py ../ffmpeg</pre>
 
+		Initially you should pass zero tests.
+
 		<h3>Integrating</h3>
 		<p>
 		The base code for your codec is given in <tt>src/labcodec.c</tt> and <tt>src/labcodec.h</tt>.
@@ -117,13 +119,17 @@ python grading.py ../ffmpeg</pre>
 			It's okay if you already compiled ffmpeg before making the above modifications, but if you did, did you rerun <tt>./configure --enable-ffplay</tt> before running <tt>make -j4</tt> again?
 			<li>
 			If everything is building successfully, but ffmpeg isn't reporting your codec as present then make sure that it is actually compiling <tt>labcodec.c</tt> in, by double checking <tt>config.mak</tt>, and watching as it builds the sources in <tt>libavcodec/</tt>.
-			<li>
+<!--			<li>
 			If <tt>labcodec.c</tt> is definitely compiling, then make sure that you correctly set <tt>AV_CODEC_ID_LABCODEC</tt> as the codec ID everywhere in all your modifications.
+-->
+			<li>
+			Are you on a system that has a version of ffmpeg preinstalled, and are you accidentally invoking that version instead?
+			If so, remember to run <tt>./ffmpeg</tt>, not <tt>ffmpeg</tt>.
 			<!--You can put a syntax error in <tt>labcodec.c</tt> to make sure it's compiling it.-->
 		</ul>
 
 		<p class=todo>
-		Make the above modifications, and run grading script.
+		Make the above modifications, compile, and run the grading script.
 		You should pass the first two tests.
 
 		<h3>Making a codec</h3>
@@ -135,26 +141,34 @@ python grading.py ../ffmpeg</pre>
 		<pre>
 $ make -j4
 ...
-$ ./ffmpeg -y -i ../video-compression-lab/samples/in1.mkv -vcodec labcodec output.mkv
+$ ./ffmpeg -y -i ../video-compression-lab/samples/sample1.mkv -vcodec labcodec output.mkv
 ...
 $ ./ffplay output.mkv</pre> 
+		Your resultant <tt>output.mkv</tt> file should be around 114 MiB in size, and should play correctly with ffplay as shown above.
 
-		You can also
+		Once you have this working, you can run the grading script, which will encode and decode the sample, and compare the result to the original video.
 
 		<ul class=hints>
 			<li>
 			If you would like to use gdb, run the <tt>ffmpeg_g</tt> binary instead; it is identical to <tt>ffmpeg</tt>, but also has debugging symbols.
+
 			<li>
 			You can dump the raw pixels (essentially what your codec should be outputting) from a video using:
-			<pre>ffmpeg -i video.mkv -vcodec rawvideo -pix_fmt rgb24 output.raw</pre>
+			<pre>./ffmpeg -i video.mkv -f rawvideo -pix_fmt rgb24 output.raw</pre>
+			Warning: This will produce very large (~100 MiB) files!
 			If your output video isn't passing the tests but looks right it may be helpful to convert both an input sample and your encoded video to raw files, and compare the binary files.
+
 			<li>
 			If you simply want hashes of the output frames from decoding your format to see if a change makes any difference, the following may be useful:
-			<pre>ffmpeg -i output.mkv -f framecrc -</pre>
+			<pre>./ffmpeg -i output.mkv -f framecrc -</pre>
+
+			<li>
+			(Basic) Are you remembering to recompile? The grading script won't recompile for you.
 		</ul>
 
 		<p class=todo>
 		Modify <tt>encode_frame</tt> and <tt>decode_frame</tt> to implement your "raw" codec, then run the grading script.
+		You should pass the first five tests.
 
 	</body>
 </html>
