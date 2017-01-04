@@ -203,7 +203,7 @@ $ ./ffplay output.mkv</pre>
 			Ultimately, a codec that produces single GOP consisting of an I-frame followed by P-frames that are just a complete copy of the previous frame with quantized DCT-encoded residuals (with 8x8 macroblocks) should pass the final tests.
 			<li>
 			A good codec for this problem won't necessarily pass test 5.
-			However, you can read a quality parameter from <tt>avctx</tt>, and use it to be lower loss on test 5, to keep passing it.
+			However, you can read a quality parameter from <tt>avctx</tt>, and use it to be lower loss on test 5, you should keep passing it.
 		</ul>
 
 		<p class=todo>
