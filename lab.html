@@ -25,10 +25,6 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 
 		Initially you should pass zero tests.
 
-		<p class=note>
-		The grading script currently relies on making ffmpeg write encoded video files to stdout, which is captured via pipes.
-		Thus, if you want to put debugging print statements into your code you must either print to stderr, or comment them out before running the grading script.
-
 		<h3>Integrating</h3>
 		<p>
 		The base code for your codec is given in <tt>src/labcodec.c</tt> and <tt>src/labcodec.h</tt>.
@@ -157,10 +153,11 @@ $ ./ffplay output.mkv</pre>
 
 		Once you have this working, you can run the grading script, which will encode and decode the sample, and compare the result to the original video.
 
-		<ul class=hints>
-			<li>
-			Are you remembering the note at the top of this lab? You may not write to stdout!
+		<p class=important>
+		The grading script currently relies on making ffmpeg write encoded video files to stdout, which is captured via pipes.
+		Thus, if you want to put debugging print statements into your code you must either print to stderr, or comment them out before running the grading script.
 
+		<ul class=hints>
 			<li>
 			If you would like to use gdb, run the <tt>ffmpeg_g</tt> binary instead; it is identical to <tt>ffmpeg</tt>, but also has debugging symbols.
 
