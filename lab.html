@@ -1,0 +1,160 @@
+<html>
+	<link rel=stylesheet href="https://pdos.csail.mit.edu/6.824/style.css" type="text/css">
+	<body style="line-height: 130%">
+		<div align="center">
+			<h1>Video Compression Lab</h1>
+		</div>
+		<hr>
+
+		<b>CRAPPY PROSE TO EXPAND AND IMPROVE</b>
+		<br>
+
+		<h3>Set up</h3>
+		Clone the lab and ffmpeg sources:
+		<pre>git clone https://git.ffmpeg.org/ffmpeg
+git clone https://github.com/petersn/video-compression-lab</pre>
+
+		<p>
+		As you work through the following tasks you can check your progress with the automatic grading script <tt>grading.py</tt> (Python 2 and 3 compatible) as follows:
+		<pre>cd video-compression-lab
+python grading.py ../ffmpeg</pre>
+
+		<h3>Integrating</h3>
+		<p>
+		The base code for your codec is given in <tt>src/labcodec.c</tt> and <tt>src/labcodec.h</tt>.
+		Where <tt>ffmpeg/</tt> is the path to your ffmpeg source, you should copy these files to <tt>ffmpeg/libavcodec/</tt>.
+		You will be implementing the entirety of your codec in these files, and shouldn't need to create any additional files beyond these, although you are free to.
+		From here on paths will implicitly be relative to the root of your ffmpeg source.
+
+		<p>
+		However, before we can start modifying <tt>src/labcodec.c</tt>, the first thing to do is hook up with libavcodec.
+		<!--To hook up with libavcodec:-->
+		Our encoder and decoder are represented by an <tt>AVCodec</tt> struct each, which are defined at the end of <tt>libavcodec/labcodec.c</tt>.
+		These two structs should be the only exported symbols of the file, and all other functions and global variables in <tt>libavcodec/labcodec.c</tt> should be declared as static to avoid polluting or colliding with the ffmpeg namespace.
+		These structs have fields like <tt>.init</tt>, <tt>.decode</tt>, and <tt>.encode2</tt> that hold pointers to the static functions that implement your codec, and libavcodec will only know about your codec via these structs.
+
+		<p>
+		You should make the following edits to libavcodec's source to integrate your file.
+		<ul>
+			<li>
+			All codecs in libavcodec are referenced by ID numbers that come from an enum in <tt>libavcodec/avcodec.h</tt>.
+			Add an entry in a reasonable place for <tt>AV_CODEC_ID_LABCODEC</tt>, which we will use as the identifier for our codec.
+
+			<li>
+			Your codec needs a description in <tt>libavcodec/codec_desc.c</tt>.
+			There is a data structure there <tt>static const AVCodecDescriptor codec_descriptors[]</tt> that holds an unordered array of <tt>AVCodecDescriptors</tt>.
+			Codecs are found by performing a linear search through this array, so add an entry similar to the others for your codec.
+			You should set the <tt>.id</tt> to <tt>AV_CODEC_ID_LABCODEC</tt>, the <tt>.type</tt> to <tt>AVMEDIA_TYPE_VIDEO</tt>, the <tt>.name</tt> to <tt>"labcodec"</tt>, and <tt>.props</tt> to <tt>AV_CODEC_PROP_LOSSY</tt>.
+			The <tt>.long_name</tt> is unimportant, but could be set to something like "Video Compression Lab Codec".
+
+			<li>
+			There is a singly-linked-list of <tt>AVCodec</tt>s that is maintained in <tt>libavcodec/utils.c</tt>.
+			This is the list that is searched by <tt>libavcodec/utils.c: avcodec_find_decoder</tt> to map a codec ID number (like <tt>AV_CODEC_ID_LABCODEC</tt>) to the actual <tt>AVCodec</tt> struct that holds the all-important function pointers.
+<!--			The method <tt>libavcodec/utils.c: avcodec_register</tt> is responsible for populating this list, but we will add a line to the function <tt>libavcodec/allcodecs.c: avcodec_register_all</tt>.
+			Specifically, add the following line some place reasonable: -->
+			In order to get our codec into this list, add the following line to <tt>libavcodec/allcodecs.c</tt> in a reasonable looking place: 
+			<pre>REGISTER_ENCDEC (LABCODEC,          labcodec);</pre>
+<!--			This macro is defined at the top of <tt>libavcodec/allcodecs.c</tt>, and simply makes two calls to <tt>avcodec_register</tt>, adding the encoder and decoder <tt>AVCodec</tt> structs that <tt>libavcodec/labcodec.c</tt> exports into the global list of codecs.
+-->
+			This macro (defined at the top of said file) calls <tt>libavcodec/utils.c: avcodec_register</tt> once each for decoder and encoder, thus adding our <tt>AVCodec</tt> structs to the global list of codecs.
+
+			<li>
+			Codecs are often identified in containers by <a href="https://en.wikipedia.org/wiki/FourCC">FourCC</a>s, so we will add a code for our format.
+			The file <tt>libav<b>format</b>/riff.c</tt> has a data structure <tt>const AVCodecTag ff_codec_bmp_tags[]</tt> that you should add the following entry to, in some reasonable place:
+			<pre>{ AV_CODEC_ID_LABCODEC,     MKTAG('L', 'a', 'b', 'C') },</pre>
+
+			<li>
+			By default ffmpeg won't compile <tt>labcodec.c</tt>, so you have add it to <tt>libavcodec/Makefile</tt> with the following lines:
+			<pre>+OBJS-$(CONFIG_LABCODEC_ENCODER)        += labcodec.o
++OBJS-$(CONFIG_LABCODEC_DECODER)        += labcodec.o</pre>
+			Here <tt>CONFIG_LABCODEC_ENCODER</tt> and <tt>CONFIG_LABCODEC_DECODER</tt> are Make variables that we will handle setting in the next step.
+<!--
+			You may notice that because we added <tt>labcodec.o</tt> to the Makefile if either the encoder or the decoder is included we can't separately compile just the encoder or decoder.
+			If this bothers you on an asthetic level feel free to separate out the encoder and decoder into separate files, but it not necessary. 
+-->
+<!--
+			<ul>
+				<li> <tt>libavcodec/utils.c: find_encdec (static)<tt/>
+				<li> <tt>libavcodec/utils.c: avcodec_find_decoder<tt/>
+				<li> <tt>ffmpeg_opt.c: choose_decoder (static)<tt/>
+				<li> <tt>ffmpeg_opt.c: add_input_streams (static)<tt/>
+				<li> <tt>ffmpeg_opt.c: open_input_file (static)<tt/>
+			</ul>
+-->
+		</ul>
+
+		<b>Once</b> you have done the above, you can run:
+		<pre>./configure --enable-ffplay</pre>
+<!--		(We won't need the <tt>- -enable-ffplay</tt> flag until task TODO: FILL IN NUMBER HERE, but you might as well pass it now so you don't have to reconfiure and make clean later.) -->
+		The configure script will auto-detect your new codec, and write out <tt>./config.mak</tt> and <tt>./config.h</tt>, which will contain <tt>CONFIG_LABCODEC_{ENCODER,DECODER}</tt> entries, globally enabling your codec.
+		<!-- (both of those paths are relative to the ffmpeg root), which will set <tt>CONFIG_LABCODEC_ENCODER=yes</tt> and <tt>#define CONFIG_LABCODEC_ENCODER 1</tt> respectively (and likewise for the decoder). -->
+<!--		These configuration files are included in all Makefiles and builds, and thus the presence of those values in those files will globally enable your codec. -->
+
+		Once you have configured you should be able to successfully build with:
+		<pre>make -j4</pre>
+		It should take several minutes, but not more than ten.
+		From this point on you should only need to touch <tt>labcodec.{c,h}</tt>, and remaking should only take a few seconds.
+
+		<p>
+		Once it has compiled you can check for presence of your codec with:
+		<pre>./ffmpeg -codecs | grep labcodec</pre>
+		You should get out a line with the description you set above.
+
+		<p>
+		Code not working? Check the following.
+		<ul class=hints>
+			<li>
+			Do you have modifications to all of the following files?
+<table>
+<tr><td>File</td><td># of lines added</td></tr>
+<tr><td><tt>libavcodec/avcodec.h</tt></td><td>1</td></tr>
+<tr><td><tt>libavcodec/codec_desc.c</tt></td><td>7</td></tr>
+<tr><td><tt>libavcodec/allcodecs.c</tt></td><td>1</td></tr>
+<tr><td><tt>libavformat/riff.c</tt></td><td>1</td></tr>
+<tr><td><tt>libavcodec/Makefile</tt></td><td>2</td></tr>
+</table>
+			<li>
+			It's okay if you already compiled ffmpeg before making the above modifications, but if you did, did you rerun <tt>./configure --enable-ffplay</tt> before running <tt>make -j4</tt> again?
+			<li>
+			If everything is building successfully, but ffmpeg isn't reporting your codec as present then make sure that it is actually compiling <tt>labcodec.c</tt> in, by double checking <tt>config.mak</tt>, and watching as it builds the sources in <tt>libavcodec/</tt>.
+			<li>
+			If <tt>labcodec.c</tt> is definitely compiling, then make sure that you correctly set <tt>AV_CODEC_ID_LABCODEC</tt> as the codec ID everywhere in all your modifications.
+			<!--You can put a syntax error in <tt>labcodec.c</tt> to make sure it's compiling it.-->
+		</ul>
+
+		<p class=todo>
+		Make the above modifications, and run grading script.
+		You should pass the first two tests.
+
+		<h3>Making a codec</h3>
+		You should now take a moment to familiarize yourself with <tt>libavcodec/labcodec.c</tt> and <tt>libavcodec/labcodec.h</tt>.
+		Your first goal will be to write a trivial "raw" codec that accomplishes no compression, and simply encodes all 24 bits per pixel.
+		This shouldn't take more than twenty additional lines of code.
+
+		To test your code you can run:
+		<pre>
+$ make -j4
+...
+$ ./ffmpeg -y -i ../video-compression-lab/samples/in1.mkv -vcodec labcodec output.mkv
+...
+$ ./ffplay output.mkv</pre> 
+
+		You can also
+
+		<ul class=hints>
+			<li>
+			If you would like to use gdb, run the <tt>ffmpeg_g</tt> binary instead; it is identical to <tt>ffmpeg</tt>, but also has debugging symbols.
+			<li>
+			You can dump the raw pixels (essentially what your codec should be outputting) from a video using:
+			<pre>ffmpeg -i video.mkv -vcodec rawvideo -pix_fmt rgb24 output.raw</pre>
+			If your output video isn't passing the tests but looks right it may be helpful to convert both an input sample and your encoded video to raw files, and compare the binary files.
+			<li>
+			If you simply want hashes of the output frames from decoding your format to see if a change makes any difference, the following may be useful:
+			<pre>ffmpeg -i output.mkv -f framecrc -</pre>
+		</ul>
+
+		<p class=todo>
+		Modify <tt>encode_frame</tt> and <tt>decode_frame</tt> to implement your "raw" codec, then run the grading script.
+
+	</body>
+</html>
