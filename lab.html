@@ -6,20 +6,28 @@
 		</div>
 		<hr>
 
-		<b>CRAPPY PROSE TO EXPAND AND IMPROVE</b>
+		<b>EXTREMELY ROUGH WORK IN PROGRESS. Please send suggestions to video-lab@mit.edu.</b>
 		<br>
 
 		<h3>Set up</h3>
 		Clone the lab and ffmpeg sources:
-		<pre>git clone https://git.ffmpeg.org/ffmpeg
-git clone https://github.com/petersn/video-compression-lab</pre>
+		<pre>$ git clone https://git.ffmpeg.org/ffmpeg
+$ git clone https://github.com/petersn/video-compression-lab</pre>
 
 		<p>
 		As you work through the following tasks you can check your progress with the automatic grading script <tt>grading.py</tt> (Python 2 and 3 compatible) as follows:
-		<pre>cd video-compression-lab
-python grading.py ../ffmpeg</pre>
+		<pre>$ cd video-compression-lab
+$ python grading.py ../ffmpeg</pre>
+
+		You can also run a subset of the tests by specifying additional arguments:
+		<pre>
+$ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs</pre>
 
 		Initially you should pass zero tests.
+
+		<p class=note>
+		The grading script currently relies on making ffmpeg write encoded video files to stdout, which is captured via pipes.
+		Thus, if you want to put debugging print statements into your code you must either print to stderr, or comment them out before running the grading script.
 
 		<h3>Integrating</h3>
 		<p>
@@ -86,20 +94,21 @@ python grading.py ../ffmpeg</pre>
 		</ul>
 
 		<b>Once</b> you have done the above, you can run:
-		<pre>./configure --enable-ffplay</pre>
+		<pre>$ ./configure --enable-ffplay</pre>
 <!--		(We won't need the <tt>- -enable-ffplay</tt> flag until task TODO: FILL IN NUMBER HERE, but you might as well pass it now so you don't have to reconfiure and make clean later.) -->
 		The configure script will auto-detect your new codec, and write out <tt>./config.mak</tt> and <tt>./config.h</tt>, which will contain <tt>CONFIG_LABCODEC_{ENCODER,DECODER}</tt> entries, globally enabling your codec.
 		<!-- (both of those paths are relative to the ffmpeg root), which will set <tt>CONFIG_LABCODEC_ENCODER=yes</tt> and <tt>#define CONFIG_LABCODEC_ENCODER 1</tt> respectively (and likewise for the decoder). -->
 <!--		These configuration files are included in all Makefiles and builds, and thus the presence of those values in those files will globally enable your codec. -->
 
 		Once you have configured you should be able to successfully build with:
-		<pre>make -j4</pre>
+		<pre>$ make -j4</pre>
 		It should take several minutes, but not more than ten.
+		There is no need to <tt>make install</tt>.
 		From this point on you should only need to touch <tt>labcodec.{c,h}</tt>, and remaking should only take a few seconds.
 
 		<p>
 		Once it has compiled you can check for presence of your codec with:
-		<pre>./ffmpeg -codecs | grep labcodec</pre>
+		<pre>$ ./ffmpeg -codecs | grep labcodec</pre>
 		You should get out a line with the description you set above.
 
 		<p>
@@ -132,7 +141,7 @@ python grading.py ../ffmpeg</pre>
 		Make the above modifications, compile, and run the grading script.
 		You should pass the first two tests.
 
-		<h3>Making a codec</h3>
+		<h3>Making a trivial codec</h3>
 		You should now take a moment to familiarize yourself with <tt>libavcodec/labcodec.c</tt> and <tt>libavcodec/labcodec.h</tt>.
 		Your first goal will be to write a trivial "raw" codec that accomplishes no compression, and simply encodes all 24 bits per pixel.
 		This shouldn't take more than twenty additional lines of code.
@@ -150,6 +159,9 @@ $ ./ffplay output.mkv</pre>
 
 		<ul class=hints>
 			<li>
+			Are you remembering the note at the top of this lab? You may not write to stdout!
+
+			<li>
 			If you would like to use gdb, run the <tt>ffmpeg_g</tt> binary instead; it is identical to <tt>ffmpeg</tt>, but also has debugging symbols.
 
 			<li>
@@ -163,12 +175,39 @@ $ ./ffplay output.mkv</pre>
 			<pre>./ffmpeg -i output.mkv -f framecrc -</pre>
 
 			<li>
-			(Basic) Are you remembering to recompile? The grading script won't recompile for you.
+			Are you remembering to recompile?
+			The grading script won't recompile for you.
 		</ul>
 
 		<p class=todo>
 		Modify <tt>encode_frame</tt> and <tt>decode_frame</tt> to implement your "raw" codec, then run the grading script.
 		You should pass the first five tests.
+
+		<h3>Making a real codec</h3>
+		Now that you have a functioning trivial codec, all that remains is to write the codec of your choosing.
+		The last test has two parts: Firstly, you pass if you successfully compress the sample file to less than 10% of the naive raw encoding while maintaining a PSNR of at least 30.0 across all frames.
+		Secondarily, a score is printed based on the compression you acheived.
+		Once you are passing, feel free to try to maximize this score.
+		(For reference, the minimum passing score is 300, and libx264 r2721 with <tt>-preset veryslow -crf 37</tt> acheives a score of 54918.)
+
+		To just run this test:
+		<pre>$ python grading.py ../ffmpeg test_compression</pre>
+
+		<p>
+		This last test is intended to be relatively hard. Good luck.
+
+		<ul class=hints>
+			<li>
+			TODO: Insert suggestions for a real codec.
+			<li>
+			Ultimately, a codec that produces single GOP consisting of an I-frame followed by P-frames that are just a complete copy of the previous frame with quantized DCT-encoded residuals (with 8x8 macroblocks) should pass the final tests.
+			<li>
+			A good codec for this problem won't necessarily pass test 5.
+			However, you can read a quality parameter from <tt>avctx</tt>, and use it to be lower loss on test 5, to keep passing it.
+		</ul>
+
+		<p class=todo>
+		Write your own video codec in <tt>labcodec.c</tt> and <tt>labcodec.h</tt> that passes the last test.
 
 	</body>
 </html>
