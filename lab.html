@@ -167,13 +167,12 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 		<h2>Making a real codec</h2>
 		Now that you have a functioning trivial codec, all that remains is to write the codec of your choosing.
 		The last test has two parts: Firstly, you pass if you successfully compress the sample file to less than 5% of the naive raw encoding while maintaining a PSNR of at least 30 dB across all frames.
-		Secondarily, a score is printed based on the compression you acheived.
+		Secondarily, a score is printed equal to the PSNR you achieved times the compression ratio.
 		Once you are passing, feel free to try to maximize this score.
-		(For reference, the minimum passing score is 600, and libx264 r2721 with <tt>-preset veryslow -crf 37</tt> acheives a score of 54918.)
+		(For reference, the minimum passing score is 600, and libx264 r2721 with <tt>-preset veryslow -crf 37</tt> achieves a score of 54918.)
 
-		To just run this test:
+		To run just this test:
 		<pre>$ python grading.py ../ffmpeg test_compression</pre>
-		This last test is intended to be relatively hard. Good luck.
 
 		<p>
 		At this point you may ignore the rest of this page and write any codec you please.
@@ -182,14 +181,15 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 		<ul class=hints>
 			<li>
 			As you work on passing test 6 you will probably start to fail test 5.
-			However, technically test 5 doesn't require that your codec be completely lossless, but simply that the encoding acheive a PSNR of at least 40 dB.
+			However, technically test 5 doesn't require that your codec be completely lossless, but simply that the encoding achieve a PSNR of at least 40 dB.
 
 			<p>
 			Thus, to help you pass all the tests simultaneously the grading script passes <tt>-q:v 10</tt> to ffmpeg for test 5 and <tt>-q:v 5</tT> for test 6.
-			This quality parameter can be extracted from the <tt>avctx</tt> with:
+			This is a quality parameter that some ffmpeg encoders listen to for rate control &mdash; it's passed to encoders and has no intrinsic effect.
+			You can access it from your encoder with:
 			<pre>float quality = avctx->global_quality / (float)FF_QP2LAMBDA</pre>
-			You can choose to revert to your previous lossless behavior if <tt>quality</tt> equals 10, but it may be worth simply using the quality parameter in your encoding process.
-			It's quite possible that your codec will pass test 5 anyway if it simply responds appropriately to the quality parameter.
+			You can choose to revert to your previous lossless behavior if <tt>quality</tt> exceeds 5, but it may be worth simply using the quality parameter in your encoding process.
+			It's very likely that your codec will pass test 5 anyway if it simply responds appropriately to the quality parameter, and you calibrate 10 to be a reasonably high quality.
 <!--			<li>
 			TODO: Insert suggestions for a real codec.
 			<li>
@@ -202,10 +202,17 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 
 		<p class=todo>
 		Write your own video codec in <tt>labcodec.c</tt> and <tt>labcodec.h</tt> that passes the last test.
+		This last test is intended to be relatively hard. Good luck.
 
 		<h3>LabCodec recipe</h3>
 		If you're continuing here then you want a recipe for passing the last task.
-		
+		Following this recipe your codec should take under 500 lines of code, and should handily pass the last test, and pass the raw video test as well without any special casing.
+
+		<p>
+		DCT
+
+		<p>
+		<b>TODO: Fill this in.</b>
 
 	</body>
 </html>
