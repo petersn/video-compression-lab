@@ -34,7 +34,6 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 
 		<p>
 		However, before we can start modifying <tt>src/labcodec.c</tt>, the first thing to do is hook up with libavcodec.
-		<!--To hook up with libavcodec:-->
 		Our encoder and decoder are represented by an <tt>AVCodec</tt> struct each, which are defined at the end of <tt>libavcodec/labcodec.c</tt>.
 		These two structs should be the only exported symbols of the file, and all other functions and global variables in <tt>libavcodec/labcodec.c</tt> should be declared as static to avoid polluting or colliding with the ffmpeg namespace.
 		These structs have fields like <tt>.init</tt>, <tt>.decode</tt>, and <tt>.encode2</tt> that hold pointers to the static functions that implement your codec, and libavcodec will only know about your codec via these structs.
@@ -56,12 +55,8 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 			<li>
 			There is a singly-linked-list of <tt>AVCodec</tt>s that is maintained in <tt>libavcodec/utils.c</tt>.
 			This is the list that is searched by <tt>libavcodec/utils.c: avcodec_find_decoder</tt> to map a codec ID number (like <tt>AV_CODEC_ID_LABCODEC</tt>) to the actual <tt>AVCodec</tt> struct that holds the all-important function pointers.
-<!--			The method <tt>libavcodec/utils.c: avcodec_register</tt> is responsible for populating this list, but we will add a line to the function <tt>libavcodec/allcodecs.c: avcodec_register_all</tt>.
-			Specifically, add the following line some place reasonable: -->
 			In order to get our codec into this list, add the following line to <tt>libavcodec/allcodecs.c</tt> in a reasonable looking place: 
 			<pre>REGISTER_ENCDEC (LABCODEC,          labcodec);</pre>
-<!--			This macro is defined at the top of <tt>libavcodec/allcodecs.c</tt>, and simply makes two calls to <tt>avcodec_register</tt>, adding the encoder and decoder <tt>AVCodec</tt> structs that <tt>libavcodec/labcodec.c</tt> exports into the global list of codecs.
--->
 			This macro (defined at the top of said file) calls <tt>libavcodec/utils.c: avcodec_register</tt> once each for decoder and encoder, thus adding our <tt>AVCodec</tt> structs to the global list of codecs.
 
 			<li>
@@ -74,27 +69,11 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 			<pre>+OBJS-$(CONFIG_LABCODEC_ENCODER)        += labcodec.o
 +OBJS-$(CONFIG_LABCODEC_DECODER)        += labcodec.o</pre>
 			Here <tt>CONFIG_LABCODEC_ENCODER</tt> and <tt>CONFIG_LABCODEC_DECODER</tt> are Make variables that we will handle setting in the next step.
-<!--
-			You may notice that because we added <tt>labcodec.o</tt> to the Makefile if either the encoder or the decoder is included we can't separately compile just the encoder or decoder.
-			If this bothers you on an asthetic level feel free to separate out the encoder and decoder into separate files, but it not necessary. 
--->
-<!--
-			<ul>
-				<li> <tt>libavcodec/utils.c: find_encdec (static)<tt/>
-				<li> <tt>libavcodec/utils.c: avcodec_find_decoder<tt/>
-				<li> <tt>ffmpeg_opt.c: choose_decoder (static)<tt/>
-				<li> <tt>ffmpeg_opt.c: add_input_streams (static)<tt/>
-				<li> <tt>ffmpeg_opt.c: open_input_file (static)<tt/>
-			</ul>
--->
 		</ul>
 
 		<b>Once</b> you have done the above, you can run:
 		<pre>$ ./configure --enable-ffplay</pre>
-<!--		(We won't need the <tt>- -enable-ffplay</tt> flag until task TODO: FILL IN NUMBER HERE, but you might as well pass it now so you don't have to reconfiure and make clean later.) -->
 		The configure script will auto-detect your new codec, and write out <tt>./config.mak</tt> and <tt>./config.h</tt>, which will contain <tt>CONFIG_LABCODEC_{ENCODER,DECODER}</tt> entries, globally enabling your codec.
-		<!-- (both of those paths are relative to the ffmpeg root), which will set <tt>CONFIG_LABCODEC_ENCODER=yes</tt> and <tt>#define CONFIG_LABCODEC_ENCODER 1</tt> respectively (and likewise for the decoder). -->
-<!--		These configuration files are included in all Makefiles and builds, and thus the presence of those values in those files will globally enable your codec. -->
 
 		Once you have configured you should be able to successfully build with:
 		<pre>$ make -j4</pre>
@@ -124,13 +103,9 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 			It's okay if you already compiled ffmpeg before making the above modifications, but if you did, did you rerun <tt>./configure --enable-ffplay</tt> before running <tt>make -j4</tt> again?
 			<li>
 			If everything is building successfully, but ffmpeg isn't reporting your codec as present then make sure that it is actually compiling <tt>labcodec.c</tt> in, by double checking <tt>config.mak</tt>, and watching as it builds the sources in <tt>libavcodec/</tt>.
-<!--			<li>
-			If <tt>labcodec.c</tt> is definitely compiling, then make sure that you correctly set <tt>AV_CODEC_ID_LABCODEC</tt> as the codec ID everywhere in all your modifications.
--->
 			<li>
 			Are you on a system that has a version of ffmpeg preinstalled, and are you accidentally invoking that version instead?
 			If so, remember to run <tt>./ffmpeg</tt>, not <tt>ffmpeg</tt>.
-			<!--You can put a syntax error in <tt>labcodec.c</tt> to make sure it's compiling it.-->
 		</ul>
 
 		<p class=todo>
