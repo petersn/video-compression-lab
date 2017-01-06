@@ -65,7 +65,7 @@ static int encode_frame(AVCodecContext* avctx, AVPacket* avpkt,
 
 	// We round up the number of bits to the nearest byte, and set that as our output size.
 	// This adds an untracked number of padding zero bits 0-7, so you cannot rely on
-	//distinguishing how many zero bits your input packet ends with!
+	// distinguishing how many zero bits your input packet ends with!
 	avpkt->size = (put_bits_count(&ctx->pb) + 7) / 8;
 
 	// For now mark every single packet as containing an I-frame.
