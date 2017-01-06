@@ -187,7 +187,7 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 			Thus, to help you pass all the tests simultaneously the grading script passes <tt>-q:v 10</tt> to ffmpeg for test 5 and <tt>-q:v 5</tT> for test 6.
 			This is a quality parameter that some ffmpeg encoders listen to for rate control &mdash; it's passed to encoders and has no intrinsic effect.
 			You can access it from your encoder with:
-			<pre>float quality = avctx->global_quality / (float)FF_QP2LAMBDA</pre>
+			<pre>float quality = avctx->global_quality / (float)FF_QP2LAMBDA;</pre>
 			You can choose to revert to your previous lossless behavior if <tt>quality</tt> exceeds 5, but it may be worth simply using the quality parameter in your encoding process.
 			It's very likely that your codec will pass test 5 anyway if it simply responds appropriately to the quality parameter, and you calibrate 10 to be a reasonably high quality.
 <!--			<li>
