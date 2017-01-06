@@ -56,7 +56,7 @@ def extract_psnr(output):
 @test
 def test_raw_video_psnr():
 	print("Invoking ./ffmpeg to compute a PSNR of your raw video format.")
-	p1 = subprocess.Popen(["./ffmpeg", "-i", sample1_path, "-vcodec", "labcodec", "-f", "matroska", "-"], stdin=open("/dev/null"), stdout=subprocess.PIPE, stderr=open("/dev/null"))
+	p1 = subprocess.Popen(["./ffmpeg", "-i", sample1_path, "-vcodec", "labcodec", "-q:v", "10", "-f", "matroska", "-"], stdin=open("/dev/null"), stdout=subprocess.PIPE, stderr=open("/dev/null"))
 	p2 = subprocess.Popen(["./ffmpeg", "-i", "-", "-i", sample1_path, "-filter_complex", "psnr", "-f", "null", "-"], stdin=p1.stdout, stderr=subprocess.PIPE)
 	p1.stdout.close()
 	output = p2.communicate()[1]
@@ -71,7 +71,7 @@ def test_raw_video_psnr():
 def test_compression():
 	print("Invoking ./ffmpeg to compute a PSNR and compression ratio of your video format.")
 	print("Compressing %s..." % sample1_path)
-	compressed_file = subprocess.check_output(["./ffmpeg", "-i", sample1_path, "-vcodec", "labcodec", "-f", "matroska", "-"], stdin=open("/dev/null"), stderr=open("/dev/null"))
+	compressed_file = subprocess.check_output(["./ffmpeg", "-i", sample1_path, "-vcodec", "labcodec", "-q:v", "5", "-f", "matroska", "-"], stdin=open("/dev/null"), stderr=open("/dev/null"))
 	uncompressed_length = 512 * 288 * 3 * 270
 	fraction_of_uncompressed = len(compressed_file) / float(uncompressed_length)
 	print("Compressed length: %.3f MiB (%.5f%% of raw)" % (len(compressed_file) / 2**20.0, 100.0 * fraction_of_uncompressed))
