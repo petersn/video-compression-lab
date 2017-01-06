@@ -33,7 +33,7 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 		From here on paths will implicitly be relative to the root of your ffmpeg source.
 
 		<p>
-		However, before we can start modifying <tt>labcodec.c</tt>, the first thing to do is hook up with libavcodec.
+		However, before we can start modifying <tt>libavcodec/labcodec.c</tt>, the first thing to do is hook up with libavcodec.
 		Our encoder and decoder are represented by an <tt>AVCodec</tt> struct each, which are defined at the end of <tt>libavcodec/labcodec.c</tt>.
 		These two structs should be the only exported symbols of the file, and all other functions and global variables in <tt>libavcodec/labcodec.c</tt> should be declared as static to avoid polluting or colliding with the ffmpeg namespace.
 		These structs have fields like <tt>.init</tt>, <tt>.decode</tt>, and <tt>.encode2</tt> that hold pointers to the static functions that implement your codec, and libavcodec will only know about your codec via these structs.
