@@ -9,7 +9,7 @@
 		<b>EXTREMELY ROUGH WORK IN PROGRESS. Please send suggestions to video-lab@mit.edu.</b>
 		<br>
 
-		<h3>Set up</h3>
+		<h2>Set up</h2>
 		Clone the lab and ffmpeg sources:
 		<pre>$ git clone https://git.ffmpeg.org/ffmpeg
 $ git clone https://github.com/petersn/video-compression-lab</pre>
@@ -25,7 +25,7 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 
 		Initially you should pass zero tests.
 
-		<h3>Integrating</h3>
+		<h2>Integrating</h2>
 		<p>
 		The base code for your codec is given in <tt>src/labcodec.c</tt> and <tt>src/labcodec.h</tt>.
 		Where <tt>ffmpeg/</tt> is the path to your ffmpeg source, you should copy these files to <tt>ffmpeg/libavcodec/</tt>.
@@ -112,7 +112,7 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 		Make the above modifications, compile, and run the grading script.
 		You should pass the first two tests.
 
-		<h3>Making a trivial codec</h3>
+		<h2>Making a trivial codec</h2>
 		You should now take a moment to familiarize yourself with <tt>libavcodec/labcodec.c</tt> and <tt>libavcodec/labcodec.h</tt>.
 		Your first goal will be to write a trivial "raw" codec that accomplishes no compression, and simply encodes all 24 bits per pixel.
 		This shouldn't take more than twenty additional lines of code.
@@ -155,7 +155,7 @@ $ ./ffplay output.mkv</pre>
 		Modify <tt>encode_frame</tt> and <tt>decode_frame</tt> to implement your "raw" codec, then run the grading script.
 		You should pass the first five tests.
 
-		<h3>Making a real codec</h3>
+		<h2>Making a real codec</h2>
 		Now that you have a functioning trivial codec, all that remains is to write the codec of your choosing.
 		The last test has two parts: Firstly, you pass if you successfully compress the sample file to less than 10% of the naive raw encoding while maintaining a PSNR of at least 30.0 across all frames.
 		Secondarily, a score is printed based on the compression you acheived.
