@@ -82,8 +82,8 @@ def test_compression():
 	psnr = extract_psnr(output)
 	print("Minimum frame PSNR: %.3f" % psnr)
 	print("Compression lab final score is: %r points" % int(psnr / fraction_of_uncompressed))
-	if fraction_of_uncompressed > 0.1:
-		return "compressed size must be less than 10% of uncompressed size"
+	if fraction_of_uncompressed > 0.05:
+		return "compressed size must be less than 5% of uncompressed size"
 	if psnr < 30:
 		return "PSNR must be at least 30.0"
 	print("Congratulations! You have completed the compression challenge.")
