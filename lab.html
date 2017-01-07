@@ -166,10 +166,10 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 
 		<h2>Making a real codec</h2>
 		Now that you have a functioning trivial codec, all that remains is to write the codec of your choosing.
-		The last test has two parts: Firstly, you pass if you successfully compress the sample file to less than 5% of the naive raw encoding (that is, &lt; 5.7 MiB compressed size) while maintaining a PSNR of at least 30 dB across all frames.
+		The last test has two parts: Firstly, you pass if you successfully compress the sample file to less than 5% of the naive raw encoding (that is, &lt; 5.7 MiB compressed size) while maintaining a PSNR of at least 35 dB across all frames.
 		Secondarily, a score is printed equal to the PSNR you achieved times the compression ratio.
 		Once you are passing, feel free to try to maximize this score.
-		(For reference, the minimum passing score is 600, and libx264 r2721 with <tt>-preset veryslow -crf 37</tt> achieves a score of 54918.)
+		(For reference, the minimum passing score is 700, and libx264 r2721 with <tt>-preset placebo -tune psnr -crf 32</tt> achieves a score of 36097.)
 
 		To run just this test:
 		<pre>$ python grading.py ../ffmpeg test_compression</pre>
