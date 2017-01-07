@@ -175,10 +175,14 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 		<pre>$ python grading.py ../ffmpeg test_compression</pre>
 
 		<p>
-		At this point you may ignore the rest of this page and write any codec you please.
-		The rest of this document outlines a simple codec recipe that will definitely pass the required tests.
+<!--		At this point you may ignore the rest of this page and write any codec you please.
+		The rest of this document outlines a simple codec recipe that will definitely pass the required tests. -->
+		To pass this test you can either roll your own codec, or follow the general design in this <a href="recipe.html">LabCodec recipe</a>.
 
 		<ul class=hints>
+			<li>
+			To allocate memory use <tt>av_mallocz</tt> and <tt>av_free</tt>.
+
 			<li>
 			As you work on passing test 6 you will probably start to fail test 5.
 			However, technically test 5 doesn't require that your codec be completely lossless, but simply that the encoding achieve a PSNR of at least 40 dB.
@@ -204,15 +208,6 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 		Write your own video codec in <tt>labcodec.c</tt> and <tt>labcodec.h</tt> that passes the last test.
 		This last test is intended to be relatively hard. Good luck.
 
-		<h3>LabCodec recipe</h3>
-		If you're continuing here then you want a recipe for passing the last task.
-		Following this recipe your codec should take under 500 lines of code, and should handily pass the last test, and pass the raw video test as well without any special casing.
-
-		<p>
-		DCT
-
-		<p>
-		<b>TODO: Fill this in.</b>
 
 	</body>
 </html>
