@@ -4,7 +4,7 @@
 Video Compression Lab
 =====================
 
-## [Get started](http://htmlpreview.github.io/?https://github.com/petersn/video-compression-lab/blob/master/lab.html)
+## [Click here for lab.html to get started](http://htmlpreview.github.io/?https://github.com/petersn/video-compression-lab/blob/master/lab.html)
 
 During this lab you will produce a video codec for `libavcodec`, with the goal of compressing test videos smaller than a given size for a given objective noise measure.
 To get started, check out [lab.html](http://htmlpreview.github.io/?https://github.com/petersn/video-compression-lab/blob/master/lab.html).
