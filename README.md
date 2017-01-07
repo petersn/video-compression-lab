@@ -1,6 +1,4 @@
 
-(This is a course 6 style lab for video compression.)
-
 Video Compression Lab
 =====================
 
