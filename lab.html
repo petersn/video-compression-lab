@@ -66,8 +66,8 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 
 			<li>
 			By default ffmpeg won't compile <tt>labcodec.c</tt>, so you have add it to <tt>libavcodec/Makefile</tt> with the following lines:
-			<pre>+OBJS-$(CONFIG_LABCODEC_ENCODER)        += labcodec.o
-+OBJS-$(CONFIG_LABCODEC_DECODER)        += labcodec.o</pre>
+			<pre>OBJS-$(CONFIG_LABCODEC_ENCODER)        += labcodec.o
+OBJS-$(CONFIG_LABCODEC_DECODER)        += labcodec.o</pre>
 			Here <tt>CONFIG_LABCODEC_ENCODER</tt> and <tt>CONFIG_LABCODEC_DECODER</tt> are Make variables that we will handle setting in the next step.
 		</ul>
 
