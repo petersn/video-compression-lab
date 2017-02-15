@@ -99,6 +99,7 @@ static int decode_frame(AVCodecContext *avctx,
 {
 	LabCodecContext* const ctx = avctx->priv_data;
 	int ret;
+	AVFrame* frame;	
 
 	// We init a bit reader on our input buffer, and return on failure.
 	if ((ret = init_get_bits(&ctx->gb, avpkt->data, avpkt->size * 8)) < 0)
