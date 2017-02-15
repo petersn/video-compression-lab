@@ -98,14 +98,15 @@ static int decode_frame(AVCodecContext *avctx,
                         AVPacket *avpkt)
 {
 	LabCodecContext* const ctx = avctx->priv_data;
+	// The AVFrame object to decode into is passed as a void* ``data'' which we cast to an AVFrame*.
+	AVFrame* const frame = data;
 	int ret;
-	AVFrame* frame;	
 
 	// We init a bit reader on our input buffer, and return on failure.
 	if ((ret = init_get_bits(&ctx->gb, avpkt->data, avpkt->size * 8)) < 0)
 		return ret;
 
-	// We request a buffer to write our output to, and return on failure.
+	// We request a buffer to write our output to is allocated for the AVFrame* that was passed in, and return on failure.
 	if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
 		return ret;
 
