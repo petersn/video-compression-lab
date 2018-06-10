@@ -55,9 +55,10 @@ $ python grading.py ../ffmpeg test_for_ffmpeg_binary test_for_labcodec_in_codecs
 			<li>
 			There is a singly-linked-list of <tt>AVCodec</tt>s that is maintained in <tt>libavcodec/utils.c</tt>.
 			This is the list that is searched by <tt>libavcodec/utils.c: avcodec_find_decoder</tt> to map a codec ID number (like <tt>AV_CODEC_ID_LABCODEC</tt>) to the actual <tt>AVCodec</tt> struct that holds the all-important function pointers.
-			In order to get our codec into this list, add the following line to <tt>libavcodec/allcodecs.c</tt> in a reasonable looking place: 
-			<pre>REGISTER_ENCDEC (LABCODEC,          labcodec);</pre>
-			This macro (defined at the top of said file) calls <tt>libavcodec/utils.c: avcodec_register</tt> once each for decoder and encoder, thus adding our <tt>AVCodec</tt> structs to the global list of codecs.
+			In order to get our codec into this list, add the following two lines to <tt>libavcodec/allcodecs.c</tt> in a reasonable looking place:
+			<pre>extern AVCodec ff_labcodec_encoder;
++extern AVCodec ff_labcodec_decoder;</pre>
+			These declarations are scrapped during the build to populate a file <tt>libavcodec/codec_list.c</tt>, and ultimately ends up adding our <tt>AVCodec</tt> structs to the global list of codecs.
 
 			<li>
 			Codecs are often identified in containers by <a href="https://en.wikipedia.org/wiki/FourCC">FourCC</a>s, so we will add a code for our format.
