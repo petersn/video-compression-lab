@@ -13,6 +13,9 @@
 		Clone the lab and ffmpeg sources:
 		<pre>$ git clone https://git.ffmpeg.org/ffmpeg
 $ git clone https://github.com/petersn/video-compression-lab</pre>
+		Additionally, it is <b>highly</b> recommended that you install libsdl2 so you can build ffplay, to be able to quickly play back your encoded videos, and see what your codec is doing (although it isn't required to complete the lab).
+		Under Ubuntu/Debian you can install libsdl2  with:
+		<pre>$ sudo apt-get install libsdl2-dev</pre>
 
 		<p>
 		As you work through the following tasks you can check your progress with the automatic grading script <tt>grading.py</tt> (Python 2 and 3 compatible) as follows:
@@ -196,6 +199,12 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 
 			<li>
 			To allocate memory use <tt>av_mallocz</tt> and <tt>av_free</tt>.
+
+			<li>
+			Don't develop blind! See what your encoded video looks like by encoding and playing back with ffplay:
+			<pre>$ ./ffmpeg -y -i ../video-compression-lab/samples/sample1.mkv -vcodec labcodec output.mkv
+$ ./ffplay output.mkv</pre>
+
 
 			<li>
 			As you work on passing test 6 you will probably start to fail test 5.
