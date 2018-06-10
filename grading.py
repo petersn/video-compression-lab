@@ -17,7 +17,8 @@ sample1_path = os.path.join(here, "samples", "sample1.mkv")
 os.chdir(sys.argv[1])
 
 tests = []
-test = lambda x: (tests.append(x), x)[1]
+def test(f):
+	tests.append(f)
 
 @test
 def test_for_ffmpeg_binary():
@@ -50,7 +51,7 @@ def extract_psnr(output):
 	psnr_line = output.strip().rsplit(b"\n", 1)[-1]
 	if b"PSNR" not in psnr_line:
 		raise ValueError("decoding side failed to produce a PSNR value -- possibly a bug in the grader?")
-	psnr = float(re.search(b"min:([.0-9]+)", psnr_line).groups()[0])
+	psnr = float(re.search(b"min:([.0-9]+|inf)", psnr_line).groups()[0])
 	return psnr
 
 @test
