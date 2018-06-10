@@ -77,7 +77,7 @@ OBJS-$(CONFIG_LABCODEC_DECODER)        += labcodec.o</pre>
 
 		<b>Once</b> you have done the above, you can run:
 		<pre>$ ./configure --enable-ffplay</pre>
-		The configure script will auto-detect your new codec, and write out <tt>./config.mak</tt> and <tt>./config.h</tt>, which will contain <tt>CONFIG_LABCODEC_{ENCODER,DECODER}</tt> entries, globally enabling your codec.
+		The configure script will auto-detect your new codec, and write out <tt>./config.h</tt>, which will contain <tt>CONFIG_LABCODEC_{ENCODER,DECODER}</tt> entries, globally enabling your codec.
 
 		Once you have configured you should be able to successfully build with:
 		<pre>$ make -j4</pre>
@@ -106,7 +106,7 @@ OBJS-$(CONFIG_LABCODEC_DECODER)        += labcodec.o</pre>
 			<li>
 			It's okay if you already compiled ffmpeg before making the above modifications, but if you did, did you rerun <tt>./configure --enable-ffplay</tt> before running <tt>make -j4</tt> again?
 			<li>
-			If everything is building successfully, but ffmpeg isn't reporting your codec as present then make sure that it is actually compiling <tt>labcodec.c</tt> in, by double checking <tt>config.mak</tt>, and watching as it builds the sources in <tt>libavcodec/</tt>.
+			If everything is building successfully, but ffmpeg isn't reporting your codec as present then make sure that it is actually compiling <tt>labcodec.c</tt> in, by double checking <tt>config.h</tt>, and watching as it builds the sources in <tt>libavcodec/</tt>.
 			<li>
 			Are you on a system that has a version of ffmpeg preinstalled, and are you accidentally invoking that version instead?
 			If so, remember to run <tt>./ffmpeg</tt>, not <tt>ffmpeg</tt>.
