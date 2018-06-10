@@ -115,6 +115,15 @@ OBJS-$(CONFIG_LABCODEC_DECODER)        += labcodec.o</pre>
 
 		<h2>Making a trivial codec</h2>
 		You should now take a moment to familiarize yourself with <tt>libavcodec/labcodec.c</tt> and <tt>libavcodec/labcodec.h</tt>.
+		To encode a video ffmpeg will:
+		<ul>
+			<li>Create a <tt>LabCodecContext</tt> (defined in <tt>libavcodec/labcodec.h</tt>), and initialize it with the <tt>encode_init</tt> function.
+			<li>Pass in each frame in order by calling <tt>encode_frame</tt> once per frame. The <tt>encode_frame</tt> function reads the pixels of the frame, and writes out an encoded representation.
+			<li>Finally, call <tt>encode_end</tt>.
+		</ul>
+		Decoding is similar, but with the decode functions.
+
+		<p>
 		As a warm-up your first goal will be to write a trivial "raw" codec that accomplishes no compression, and simply encodes all 24 bits per pixel.
 		This shouldn't take more than twenty additional lines of code.
 
@@ -139,7 +148,7 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 		<ul class=hints>
 			<li>
 			Use the macro <tt>PIXEL(color, x, y)</tt> to read and write the image data, and <tt>avctx-&gt;width</tt> and <tt>avctx-&gt;height</tt>  for image dimensions.
-			These tools, plus the functions <tt>put_bits</tt> and <tt>get_bits</tt>, should be all you need.
+			Use the functions <tt>put_bits</tt> and <tt>get_bits</tt> in <tt>encode_frame</tt> and <tt>decode_frame</tt> respectively to write the compressed stream and read it back.
 
 			<li>
 			If you would like to use gdb run the <tt>ffmpeg_g</tt> binary instead; it is identical to <tt>ffmpeg</tt>, but also has debugging symbols.
@@ -148,7 +157,7 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 			You can dump the raw pixels (essentially what your codec should be outputting) from a video using:
 			<pre>./ffmpeg -i video.mkv -f rawvideo -pix_fmt rgb24 output.raw</pre>
 			Warning: This will produce very large (~100 MiB) files!
-			It may be helpful to convert both the input sample and your encoded video to raw files, and compare the binary files.
+			If you are having issues it may be helpful to convert both the input sample and your encoded video to raw files, and compare the binary files.
 
 <!--
 			<li>
@@ -181,6 +190,10 @@ NOTICE: I think this is actually false. It seems libavcodec masks printf, and di
 		To pass this test you can either roll your own codec, or follow the general design in this <a href="http://htmlpreview.github.io/?https://github.com/petersn/video-compression-lab/blob/master/recipe.html">LabCodec recipe</a>.
 
 		<ul class=hints>
+			<li>
+			You will probably want persistent data structures stored between frames (for residuals, tables, etc.).
+			You can add fields to <tt>LabCodecContext</tt> in <tt>libavcodec/labcodec.h</tt> for your inter-frame storage, and allocate any needed buffers in <tt>encode_init</tt>.
+
 			<li>
 			To allocate memory use <tt>av_mallocz</tt> and <tt>av_free</tt>.
 
