@@ -112,8 +112,10 @@ static int decode_frame(AVCodecContext *avctx,
 
 	// === Do decoding here ===
 	// Hints: avctx->width and avctx->height are still the width and height.
-	// You can write pixels like:
-	//PIXEL(0, 10, 30) = 255;
+	// To write pixels into the frame:
+	//     PIXEL(0, 10, 30) = 255;
+	// You can read the encoded stream bit-by-bit like:
+	//     int nibble = get_bits(&ctx->gb, 4);
 
 	// Tell libavcodec that we successfully decoded a frame.
 	*got_frame = 1;
