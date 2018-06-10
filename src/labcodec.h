@@ -16,6 +16,8 @@ typedef struct {
 	// This is used during encoding to write output packets bit by bit.
 	PutBitContext pb;
 
+	// If you need to store data structures between frames, add them here...
+
 } LabCodecContext;
 
 #endif /* AVCODEC_LABCODEC_H */
