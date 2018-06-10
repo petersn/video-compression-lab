@@ -76,7 +76,6 @@ static int encode_frame(AVCodecContext* avctx, AVPacket* avpkt,
 static av_cold int decode_init(AVCodecContext* avctx)
 {
 	LabCodecContext* const ctx = avctx->priv_data;
-	ctx->avctx = avctx;
 
 	// Tell libavcodec that we would like our input as
 	// RGB triples encoded in a single packed array.
