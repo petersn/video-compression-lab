@@ -106,7 +106,7 @@ static int decode_frame(AVCodecContext *avctx,
 	if ((ret = init_get_bits(&ctx->gb, avpkt->data, avpkt->size * 8)) < 0)
 		return ret;
 
-	// We request a buffer to write our output to is allocated for the AVFrame* that was passed in, and return on failure.
+	// We request a buffer to write our output frame to, and return on failure.
 	if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
 		return ret;
 
