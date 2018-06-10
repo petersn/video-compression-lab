@@ -47,7 +47,7 @@ static int encode_frame(AVCodecContext* avctx, AVPacket* avpkt,
 
 	// Our output buffer now lives at avpkt->data, and can fit at most avpkt->size bytes.
 
-	// We now initialize our LabCodecContext.PutBitContext.
+	// We now initialize our LabCodecContext's PutBitContext.
 	// This will allow us to write to avpkt->data bit by bit.
 	init_put_bits(&ctx->pb, avpkt->data, avpkt->size * 8);
 
