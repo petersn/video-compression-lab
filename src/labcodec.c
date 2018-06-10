@@ -36,14 +36,14 @@ static int encode_frame(AVCodecContext* avctx, AVPacket* avpkt,
                         const AVFrame* frame, int* got_packet)
 {
 	LabCodecContext* const ctx = avctx->priv_data;
-	int ret;
+	int return_code;
 
 	// Unfortunately, we must pre-allocate an output buffer for our encoded frame,
 	// and thus guess as to the maximum possible number of bytes we could need.
 	// We return the error code (probably out of memory) if the call fails.
 	int maximum_possible_encoded_frame_size = avctx->width * avctx->height * 10;
-	if ((ret = ff_alloc_packet2(avctx, avpkt, maximum_possible_encoded_frame_size + AV_INPUT_BUFFER_MIN_SIZE, 0)) < 0)
-		return ret;
+	if ((return_code = ff_alloc_packet2(avctx, avpkt, maximum_possible_encoded_frame_size + AV_INPUT_BUFFER_MIN_SIZE, 0)) < 0)
+		return return_code;
 
 	// Our output buffer now lives at avpkt->data, and can fit at most avpkt->size bytes.
 
@@ -73,7 +73,6 @@ static int encode_frame(AVCodecContext* avctx, AVPacket* avpkt,
 
 	// We tell libavcodec that we successfully wrote output.
 	*got_packet = 1;
-
 	return 0;
 }
 
@@ -93,22 +92,22 @@ static av_cold int decode_end(AVCodecContext* avctx)
 	return 0;
 }
 
-static int decode_frame(AVCodecContext *avctx,
-                        void *data, int *got_frame,
-                        AVPacket *avpkt)
+static int decode_frame(AVCodecContext* avctx,
+                        void* data, int* got_frame,
+                        AVPacket* avpkt)
 {
 	LabCodecContext* const ctx = avctx->priv_data;
-	// The AVFrame object to decode into is passed as a void* ``data'' which we cast to an AVFrame*.
+	// The AVFrame object to decode into is passed as a void* data which we cast to an AVFrame*.
 	AVFrame* const frame = data;
-	int ret;
+	int return_code;
 
 	// We init a bit reader on our input buffer, and return on failure.
-	if ((ret = init_get_bits(&ctx->gb, avpkt->data, avpkt->size * 8)) < 0)
-		return ret;
+	if ((return_code = init_get_bits(&ctx->gb, avpkt->data, avpkt->size * 8)) < 0)
+		return return_code;
 
 	// We request a buffer to write our output frame to, and return on failure.
-	if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
-		return ret;
+	if ((return_code = ff_get_buffer(avctx, frame, 0)) < 0)
+		return return_code;
 
 	// === Do decoding here ===
 	// Hints: avctx->width and avctx->height are still the width and height.
