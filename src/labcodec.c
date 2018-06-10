@@ -17,9 +17,7 @@ static av_cold int encode_init(AVCodecContext* avctx)
 	LabCodecContext* const ctx = avctx->priv_data;
 
 	// Your codec initialization code here...
-	// You will have to initialize any fields of your LabCodecContext here.
-	// As a default example we save our parent AVCodecContext.
-	ctx->avctx = avctx;
+	// You should initialize custom fields of your LabCodecContext here.
 
 	return 0;
 }
@@ -38,30 +36,29 @@ static int encode_frame(AVCodecContext* avctx, AVPacket* avpkt,
 	LabCodecContext* const ctx = avctx->priv_data;
 	int return_code;
 
-	// Unfortunately, we must pre-allocate an output buffer for our encoded frame,
+	// Unfortunately, we must pre-allocate an output packet buffer for our encoded frame,
 	// and thus guess as to the maximum possible number of bytes we could need.
 	// We return the error code (probably out of memory) if the call fails.
 	int maximum_possible_encoded_frame_size = avctx->width * avctx->height * 10;
 	if ((return_code = ff_alloc_packet2(avctx, avpkt, maximum_possible_encoded_frame_size + AV_INPUT_BUFFER_MIN_SIZE, 0)) < 0)
 		return return_code;
 
-	// Our output buffer now lives at avpkt->data, and can fit at most avpkt->size bytes.
+	// Our output packet now lives at avpkt->data, and can fit at most avpkt->size bytes.
 
-	// We now initialize our LabCodecContext's PutBitContext.
-	// This will allow us to write to avpkt->data bit by bit.
+	// We now initialize our LabCodecContext's PutBitContext, to write to avpkt->data bit by bit.
 	init_put_bits(&ctx->pb, avpkt->data, avpkt->size * 8);
 
-	// You can now write bits into our output buffer as follows:
-	//put_bits(&ctx->pb, num_bits, value);
-	// For example, put_bits(&ctx->pb, 5, 13) will write 01101 into the output buffer.
+	// You can now write bits into our output packet:
+	//     put_bits(&ctx->pb, num_bits, value);
+	// For example, put_bits(&ctx->pb, 5, 13) will write 01101 into the output packet.
 	// The argument num_bits can be at most 31.
 
 	// === Do encoding here ===
 	// Hints: avctx->width and avctx->height give the input frame size.
 	// You can read pixels with PIXEL(color, x, y) (See comments at top of file.)
 
-	// Flush our bit writer to the buffer.
-	flush_put_bits(&ctx->pb);	
+	// Flush our bit writer to the packet.
+	flush_put_bits(&ctx->pb);
 
 	// We round up the number of bits to the nearest byte, and set that as our output size.
 	// This adds an untracked number of padding zero bits 0-7, so you cannot rely on
@@ -71,7 +68,7 @@ static int encode_frame(AVCodecContext* avctx, AVPacket* avpkt,
 	// For now mark every single packet as containing an I-frame.
 	avpkt->flags |= AV_PKT_FLAG_KEY;
 
-	// We tell libavcodec that we successfully wrote output.
+	// We tell libavcodec that we successfully wrote a packet.
 	*got_packet = 1;
 	return 0;
 }
@@ -97,7 +94,6 @@ static int decode_frame(AVCodecContext* avctx,
                         AVPacket* avpkt)
 {
 	LabCodecContext* const ctx = avctx->priv_data;
-	// The AVFrame object to decode into is passed as a void* data which we cast to an AVFrame*.
 	AVFrame* const frame = data;
 	int return_code;
 
